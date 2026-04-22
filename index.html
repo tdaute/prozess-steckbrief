@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prozess-Steckbrief · IMB ProzessScout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #3a3a3a;
+    --ink-muted: #6b6b6b;
+    --paper: #faf8f4;
+    --paper-warm: #f3efe7;
+    --accent: #c8431f;
+    --accent-soft: #e8d3c7;
+    --line: #d9d3c5;
+    --focus: #c8431f;
+    --shadow: 0 1px 0 rgba(0,0,0,0.04), 0 8px 24px -12px rgba(26,26,26,0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse at top left, rgba(200,67,31,0.04), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(200,67,31,0.03), transparent 50%);
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 32px 120px;
+  }
+
+  /* ---------- HEADER ---------- */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+  }
+
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 16px;
+  }
+
+  .brand::before {
+    content: "● ";
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 5.5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    font-variation-settings: "opsz" 96;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 17px;
+    max-width: 560px;
+    margin: 0;
+  }
+
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-align: right;
+    letter-spacing: 0.05em;
+  }
+
+  .meta div { margin-bottom: 4px; }
+
+  /* ---------- PROGRESS ---------- */
+  .progress {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    padding: 16px 0;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 2px;
+    background: var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section {
+    margin-bottom: 56px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    margin: 0;
+    font-variation-settings: "opsz" 36;
+  }
+
+  .section-hint {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+    font-style: italic;
+  }
+
+  /* ---------- FIELDS ---------- */
+  .field {
+    margin-bottom: 24px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+
+  label .hint {
+    font-weight: 400;
+    color: var(--ink-muted);
+    font-size: 12px;
+    margin-left: 8px;
+    font-style: italic;
+  }
+
+  label .req {
+    color: var(--accent);
+    margin-left: 2px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+  }
+
+  textarea {
+    min-height: 90px;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px rgba(200,67,31,0.12);
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b6b6b' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- DYNAMIC LISTS (Steps, Systems) ---------- */
+  .dyn-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dyn-item {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .dyn-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-muted);
+    padding-top: 14px;
+    text-align: right;
+  }
+
+  .dyn-item input,
+  .dyn-item textarea {
+    width: 100%;
+  }
+
+  .dyn-remove {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 2px;
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+
+  .dyn-remove:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-add {
+    background: transparent;
+    border: 1px dashed var(--line);
+    color: var(--ink-soft);
+    padding: 10px 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    border-radius: 2px;
+    margin-top: 10px;
+    transition: all 0.15s;
+    align-self: flex-start;
+  }
+
+  .btn-add:hover {
+    border-color: var(--accent);
+    border-style: solid;
+    color: var(--accent);
+  }
+
+  /* ---------- CHECKBOX GROUPS ---------- */
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.15s;
+    font-size: 14px;
+  }
+
+  .check-item:hover {
+    border-color: var(--ink-soft);
+  }
+
+  .check-item input {
+    width: auto;
+    margin: 0;
+    accent-color: var(--accent);
+  }
+
+  .check-item input:checked ~ span {
+    font-weight: 500;
+  }
+
+  .check-item:has(input:checked) {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+
+  /* ---------- ACTION BAR ---------- */
+  .actions {
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 24px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid;
+    letter-spacing: 0.02em;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--ink);
+  }
+
+  /* ---------- OUTPUT PANEL ---------- */
+  .output-panel {
+    margin-top: 48px;
+    padding: 32px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px;
+    display: none;
+  }
+
+  .output-panel.visible {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .output-panel h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+
+  .output-panel p {
+    color: var(--ink-soft);
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+
+  .output-text {
+    width: 100%;
+    min-height: 300px;
+    max-height: 500px;
+    padding: 16px;
+    background: var(--paper-warm);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink);
+    resize: vertical;
+    white-space: pre-wrap;
+  }
+
+  .output-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 20px;
+    border-radius: 2px;
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.25s;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div>
+      <div class="brand">IMB Gruppe · ProzessScout</div>
+      <h1>Prozess-<em>Steckbrief</em></h1>
+      <p class="subtitle">Beschreibe deinen Prozess strukturiert — und erhalte am Ende einen fertigen Input für den KI-Assistenten, der ihn visualisiert und Automatisierungs­potenziale aufzeigt.</p>
+    </div>
+    <div class="meta">
+      <div>DOC / PROZ-01</div>
+      <div id="today"></div>
+      <div>~ 10–15 min</div>
+    </div>
+  </header>
+
+  <!-- ===== PROGRESS ===== -->
+  <div class="progress">
+    <span>FORTSCHRITT</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <span id="progress-text">0%</span>
+  </div>
+
+  <form id="process-form" autocomplete="off">
+
+    <!-- ===== 01 — BASIS ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">01 / GRUNDLAGEN</span>
+      </div>
+      <h2>Prozess-Basis</h2>
+      <p class="section-hint">Wer bist du, und um welchen Prozess geht es?</p>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Unternehmen<span class="req">*</span></label>
+          <input type="text" name="company" required placeholder="z. B. Muster GmbH" />
+        </div>
+        <div class="field">
+          <label>Ansprechpartner<span class="req">*</span></label>
+          <input type="text" name="contact" required placeholder="Vorname Nachname" />
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Branche</label>
+          <input type="text" name="industry" placeholder="z. B. Autohaus, Handwerk, Kanzlei" />
+        </div>
+        <div class="field">
+          <label>Mitarbeiterzahl</label>
+          <select name="size">
+            <option value="">bitte wählen</option>
+            <option>1–9</option>
+            <option>10–49</option>
+            <option>50–249</option>
+            <option>250+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Name des Prozesses<span class="req">*</span> <span class="hint">kurz und sprechend</span></label>
+        <input type="text" name="process_name" required placeholder="z. B. Angebotserstellung für Neukundenanfragen" />
+      </div>
+
+      <div class="field">
+        <label>Zweck des Prozesses<span class="req">*</span> <span class="hint">welches Geschäftsergebnis liefert er?</span></label>
+        <textarea name="process_purpose" required placeholder="z. B. Aus einer eingehenden Kundenanfrage wird innerhalb von 48h ein verbindliches Angebot erstellt und versendet."></textarea>
+      </div>
+    </section>
+
+    <!-- ===== 02 — TRIGGER ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">02 / AUSLÖSER</span>
+      </div>
+      <h2>Trigger & Start</h2>
+      <p class="section-hint">Was startet den Prozess — und wie oft passiert das?</p>
+
+      <div class="field">
+        <label>Auslöser<span class="req">*</span></label>
+        <textarea name="trigger" required placeholder="z. B. E-Mail über das Kontaktformular der Website, Anruf, Weiterleitung vom Vertrieb …"></textarea>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Frequenz</label>
+          <select name="frequency">
+            <option value="">bitte wählen</option>
+            <option>mehrmals täglich</option>
+            <option>täglich</option>
+            <option>mehrmals pro Woche</option>
+            <option>wöchentlich</option>
+            <option>monatlich</option>
+            <option>seltener</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Durchläufe pro Monat <span class="hint">Richtwert</span></label>
+          <input type="number" name="volume" min="0" placeholder="z. B. 40" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Saisonale Besonderheiten <span class="hint">optional</span></label>
+        <input type="text" name="seasonality" placeholder="z. B. Spitzen im Q1, Urlaubszeit ruhiger" />
+      </div>
+    </section>
+
+    <!-- ===== 03 — BETEILIGTE ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">03 / BETEILIGTE</span>
+      </div>
+      <h2>Rollen & Beteiligte</h2>
+      <p class="section-hint">Wer ist im Prozess involviert? Intern wie extern.</p>
+
+      <div class="field">
+        <label>Beteiligte Rollen / Abteilungen<span class="req">*</span></label>
+        <textarea name="roles" required placeholder="z. B. Vertrieb (Anfrage-Aufnahme), Geschäftsführung (Freigabe), Buchhaltung, Kunde, Steuerberater (extern)"></textarea>
+      </div>
+    </section>
+
+    <!-- ===== 04 — PROZESSSCHRITTE ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">04 / ABLAUF</span>
+      </div>
+      <h2>Prozessschritte</h2>
+      <p class="section-hint">Schritt für Schritt, wie der Prozess aktuell abläuft. Mindestens 3 Schritte.</p>
+
+      <div class="dyn-list" id="steps-list"></div>
+      <button type="button" class="btn-add" id="add-step">+ Schritt hinzufügen</button>
+    </section>
+
+    <!-- ===== 05 — ENTSCHEIDUNGEN ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">05 / VERZWEIGUNGEN</span>
+      </div>
+      <h2>Entscheidungspunkte</h2>
+      <p class="section-hint">Wo wird im Prozess verzweigt? Nach welchen Kriterien?</p>
+
+      <div class="field">
+        <label>Entscheidungen</label>
+        <textarea name="decisions" placeholder="z. B. Anfrage unter 5.000 € → Sachbearbeiter / darüber → Geschäftsführung; Bestandskunde → Fast-Track / Neukunde → Bonitätsprüfung"></textarea>
+      </div>
+    </section>
+
+    <!-- ===== 06 — SYSTEME ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">06 / TOOLS</span>
+      </div>
+      <h2>Systeme & Tools</h2>
+      <p class="section-hint">Welche Software, welche Dokumente, welche Datenquellen werden genutzt?</p>
+
+      <div class="field">
+        <label>Eingesetzte Systeme<span class="req">*</span></label>
+        <div class="check-grid" id="systems-checks"></div>
+        <div style="margin-top:12px">
+          <input type="text" name="systems_other" placeholder="Weitere Systeme (kommagetrennt) …" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 07 — MEDIENBRÜCHE ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">07 / REIBUNG</span>
+      </div>
+      <h2>Medienbrüche & Schmerzpunkte</h2>
+      <p class="section-hint">Wo wird manuell umkopiert, abgetippt, weitergeleitet? Was nervt?</p>
+
+      <div class="field">
+        <label>Medienbrüche <span class="hint">wo wird manuell übertragen?</span></label>
+        <textarea name="media_breaks" placeholder="z. B. Daten aus E-Mail werden manuell ins CRM getippt; PDF-Rechnung wird ausgedruckt und an Buchhaltung weitergereicht"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Schmerzpunkte<span class="req">*</span> <span class="hint">was nervt, wo passieren Fehler, wo dauert es?</span></label>
+        <textarea name="pain_points" required placeholder="z. B. Doppelte Dateneingabe, Wartezeit auf Freigabe, unvollständige Anfragen führen zu Rückfragen-Schleifen, keine Übersicht über Status"></textarea>
+      </div>
+    </section>
+
+    <!-- ===== 08 — DATEN ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">08 / DATEN</span>
+      </div>
+      <h2>Datenarten & Datenschutz</h2>
+      <p class="section-hint">Was fließt durch den Prozess? Wichtig für Compliance-Einschätzung.</p>
+
+      <div class="field">
+        <label>Welche Daten werden verarbeitet?</label>
+        <div class="check-grid" id="data-checks"></div>
+      </div>
+
+      <div class="field">
+        <label>Weitere Anmerkungen zu Daten <span class="hint">optional</span></label>
+        <input type="text" name="data_notes" placeholder="z. B. Bonitätsdaten, Gesundheitsdaten, technische Messdaten …" />
+      </div>
+    </section>
+
+    <!-- ===== 09 — ZEIT & ZIEL ===== -->
+    <section>
+      <div class="section-header">
+        <span class="section-number">09 / ZIEL</span>
+      </div>
+      <h2>Dauer, Erfolg & Wunsch</h2>
+      <p class="section-hint">Wie lange dauert es heute, und wo soll die Reise hingehen?</p>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Dauer pro Durchlauf <span class="hint">End-to-End</span></label>
+          <input type="text" name="duration" placeholder="z. B. 2–3 Werktage; 20 Min. aktive Arbeit" />
+        </div>
+        <div class="field">
+          <label>Erfolgskriterium</label>
+          <input type="text" name="success" placeholder="z. B. Angebot ist beim Kunden, CRM ist aktualisiert" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Was soll besser werden?<span class="req">*</span> <span class="hint">dein Wunsch-Zustand</span></label>
+        <textarea name="goal" required placeholder="z. B. Anfragen automatisch erfassen, Angebote in Minuten statt Tagen, weniger Fehler, Status-Transparenz"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Bereits vorhandene Tools/Automatisierungen <span class="hint">optional</span></label>
+        <textarea name="existing_automation" placeholder="z. B. Zapier nutzen wir schon für Lead-Transfer; n8n läuft auf eigenem Server"></textarea>
+      </div>
+    </section>
+
+    <!-- ===== ACTION ===== -->
+    <div class="actions">
+      <button type="button" class="btn-primary" id="generate">Steckbrief generieren →</button>
+      <button type="button" class="btn-secondary" id="save-draft">Entwurf lokal speichern</button>
+      <button type="button" class="btn-secondary" id="load-draft">Entwurf laden</button>
+      <button type="button" class="btn-secondary" id="reset">Zurücksetzen</button>
+    </div>
+
+    <!-- ===== OUTPUT ===== -->
+    <div class="output-panel" id="output-panel">
+      <h3>Dein Prozess-Steckbrief</h3>
+      <p>Kopiere diesen Text und füge ihn direkt in den ProzessScout-Chat ein. Der Assistent erkennt das Format und geht zügig in die Visualisierung.</p>
+      <textarea class="output-text" id="output-text" readonly></textarea>
+      <div class="output-actions">
+        <button type="button" class="btn-primary" id="copy-output">In Zwischenablage kopieren</button>
+        <button type="button" class="btn-secondary" id="download-md">Als .md herunterladen</button>
+        <button type="button" class="btn-secondary" id="download-txt">Als .txt herunterladen</button>
+      </div>
+    </div>
+  </form>
+
+  <footer>
+    <div>© IMB Gruppe · ProzessScout v1.0</div>
+    <div>Lokal ausgefüllt · keine Daten werden übertragen</div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  // --- DATE ---
+  const today = new Date();
+  document.getElementById('today').textContent = today.toLocaleDateString('de-DE', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
+
+  // --- SYSTEMS & DATA CHECKLISTS ---
+  const SYSTEMS = [
+    'E-Mail (Outlook/Gmail)', 'Excel / Google Sheets', 'Word / Google Docs',
+    'CRM (HubSpot, Pipedrive …)', 'ERP (SAP, Lexware …)',
+    'DATEV', 'Buchhaltungssoftware', 'Kontaktformular Website',
+    'Telefon / Messenger (WhatsApp)', 'Slack / Teams', 'Cloud-Speicher (Drive/SharePoint)',
+    'Papier / Ordner', 'Eigenentwicklung', 'Fachspezifische Software'
+  ];
+  const DATA_TYPES = [
+    'Kundendaten (Name, Adresse)', 'Kontaktdaten (Mail, Tel.)',
+    'Vertragsdaten', 'Rechnungs-/Finanzdaten', 'Bewerberdaten',
+    'Mitarbeiterdaten', 'Gesundheitsdaten', 'Produktdaten',
+    'technische Messwerte', 'Bild-/Video-Dateien', 'Dokumente (PDF, Word)'
+  ];
+
+  const buildChecks = (containerId, items, namePrefix) => {
+    const c = document.getElementById(containerId);
+    items.forEach((item, i) => {
+      const id = `${namePrefix}_${i}`;
+      const label = document.createElement('label');
+      label.className = 'check-item';
+      label.innerHTML = `<input type="checkbox" name="${namePrefix}" value="${item}" id="${id}"><span>${item}</span>`;
+      c.appendChild(label);
+    });
+  };
+  buildChecks('systems-checks', SYSTEMS, 'sys');
+  buildChecks('data-checks', DATA_TYPES, 'data');
+
+  // --- DYNAMIC STEPS ---
+  const stepsList = document.getElementById('steps-list');
+  let stepCounter = 0;
+
+  const addStep = (value = '') => {
+    stepCounter++;
+    const n = stepsList.children.length + 1;
+    const row = document.createElement('div');
+    row.className = 'dyn-item';
+    row.dataset.id = stepCounter;
+    row.innerHTML = `
+      <div class="dyn-num">${String(n).padStart(2,'0')}</div>
+      <textarea name="step" placeholder="Was passiert in diesem Schritt? Wer tut es? Mit welchem Tool?">${value}</textarea>
+      <button type="button" class="dyn-remove" aria-label="Schritt entfernen">×</button>
+    `;
+    row.querySelector('.dyn-remove').addEventListener('click', () => {
+      row.remove();
+      renumberSteps();
+      updateProgress();
+    });
+    row.querySelector('textarea').addEventListener('input', updateProgress);
+    stepsList.appendChild(row);
+    updateProgress();
+  };
+
+  const renumberSteps = () => {
+    [...stepsList.children].forEach((row, i) => {
+      row.querySelector('.dyn-num').textContent = String(i + 1).padStart(2, '0');
+    });
+  };
+
+  // initial 3 steps
+  addStep(); addStep(); addStep();
+
+  document.getElementById('add-step').addEventListener('click', () => addStep());
+
+  // --- PROGRESS TRACKING ---
+  const form = document.getElementById('process-form');
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
+
+  const requiredFields = () => [
+    ...form.querySelectorAll('input[required], textarea[required]'),
+    ...stepsList.querySelectorAll('textarea')
+  ];
+
+  const updateProgress = () => {
+    const fields = requiredFields();
+    const filled = fields.filter(f => f.value.trim().length > 0).length;
+    // bonus: systems + data checkboxes
+    const sysChecked = form.querySelectorAll('input[name="sys"]:checked').length > 0 ? 1 : 0;
+    const total = fields.length + 1;
+    const pct = Math.min(100, Math.round(((filled + sysChecked) / total) * 100));
+    progressFill.style.width = pct + '%';
+    progressText.textContent = pct + '%';
+  };
+
+  form.addEventListener('input', updateProgress);
+  form.addEventListener('change', updateProgress);
+  updateProgress();
+
+  // --- TOAST ---
+  const toast = document.getElementById('toast');
+  const showToast = (msg) => {
+    toast.textContent = msg;
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 2200);
+  };
+
+  // --- GENERATE OUTPUT ---
+  const collectData = () => {
+    const fd = new FormData(form);
+    const data = {};
+    for (const [key, value] of fd.entries()) {
+      if (key === 'step' || key === 'sys' || key === 'data') {
+        data[key] = data[key] || [];
+        if (value.trim()) data[key].push(value.trim());
+      } else {
+        data[key] = value.trim();
+      }
+    }
+    return data;
+  };
+
+  const formatOutput = (d) => {
+    const steps = (d.step || []).map((s, i) => `  ${i+1}. ${s}`).join('\n') || '  (keine angegeben)';
+    const systems = [...(d.sys || []), ...(d.systems_other ? d.systems_other.split(',').map(s => s.trim()).filter(Boolean) : [])];
+    const dataTypes = d.data || [];
+
+    return `# PROZESS-STECKBRIEF
+
+## 01 · Grundlagen
+- **Unternehmen:** ${d.company || '—'}
+- **Ansprechpartner:** ${d.contact || '—'}
+- **Branche:** ${d.industry || '—'}
+- **Mitarbeiterzahl:** ${d.size || '—'}
+- **Prozessname:** ${d.process_name || '—'}
+- **Zweck:** ${d.process_purpose || '—'}
+
+## 02 · Auslöser & Volumen
+- **Trigger:** ${d.trigger || '—'}
+- **Frequenz:** ${d.frequency || '—'}
+- **Durchläufe/Monat:** ${d.volume || '—'}
+- **Saisonalität:** ${d.seasonality || '—'}
+
+## 03 · Beteiligte
+${d.roles || '—'}
+
+## 04 · Prozessschritte (Ist)
+${steps}
+
+## 05 · Entscheidungspunkte
+${d.decisions || '—'}
+
+## 06 · Systeme & Tools
+${systems.length ? systems.map(s => `- ${s}`).join('\n') : '—'}
+
+## 07 · Medienbrüche & Schmerzpunkte
+- **Medienbrüche:** ${d.media_breaks || '—'}
+- **Schmerzpunkte:** ${d.pain_points || '—'}
+
+## 08 · Datenarten
+${dataTypes.length ? dataTypes.map(s => `- ${s}`).join('\n') : '—'}
+${d.data_notes ? `\n**Anmerkungen:** ${d.data_notes}` : ''}
+
+## 09 · Dauer, Ziel & Bestand
+- **Dauer pro Durchlauf:** ${d.duration || '—'}
+- **Erfolgskriterium:** ${d.success || '—'}
+- **Wunsch-Zustand:** ${d.goal || '—'}
+- **Bereits vorhandene Automation:** ${d.existing_automation || '—'}
+
+---
+*Bitte visualisiere diesen Prozess in Phase 2 und erstelle in Phase 3 den Detailbericht mit Automatisierungs- und KI-Empfehlungen inkl. Compliance-Check.*`;
+  };
+
+  const validate = () => {
+    const missing = [];
+    form.querySelectorAll('input[required], textarea[required]').forEach(f => {
+      if (!f.value.trim()) missing.push(f.previousElementSibling?.textContent?.replace(/\*/g, '').trim() || f.name);
+    });
+    const stepCount = [...stepsList.querySelectorAll('textarea')].filter(t => t.value.trim()).length;
+    if (stepCount < 3) missing.push('Mindestens 3 Prozessschritte');
+    return missing;
+  };
+
+  const outputPanel = document.getElementById('output-panel');
+  const outputText = document.getElementById('output-text');
+
+  document.getElementById('generate').addEventListener('click', () => {
+    const missing = validate();
+    if (missing.length) {
+      showToast(`Bitte ergänzen: ${missing.slice(0,2).join(', ')}${missing.length>2 ? ' …' : ''}`);
+      return;
+    }
+    const d = collectData();
+    outputText.value = formatOutput(d);
+    outputPanel.classList.add('visible');
+    outputPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // --- COPY ---
+  document.getElementById('copy-output').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(outputText.value);
+      showToast('In Zwischenablage kopiert ✓');
+    } catch {
+      outputText.select();
+      document.execCommand('copy');
+      showToast('Kopiert ✓');
+    }
+  });
+
+  // --- DOWNLOAD ---
+  const download = (ext, mime) => {
+    const blob = new Blob([outputText.value], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const d = collectData();
+    const slug = (d.process_name || 'prozess').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+    a.href = url;
+    a.download = `steckbrief-${slug}.${ext}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  document.getElementById('download-md').addEventListener('click', () => download('md', 'text/markdown'));
+  document.getElementById('download-txt').addEventListener('click', () => download('txt', 'text/plain'));
+
+  // --- LOCAL DRAFT (in-memory; no localStorage per artifact rules) ---
+  let draft = null;
+  document.getElementById('save-draft').addEventListener('click', () => {
+    draft = collectData();
+    draft.__steps_raw = [...stepsList.querySelectorAll('textarea')].map(t => t.value);
+    showToast('Entwurf gespeichert (Session)');
+  });
+  document.getElementById('load-draft').addEventListener('click', () => {
+    if (!draft) { showToast('Kein Entwurf vorhanden'); return; }
+    Object.entries(draft).forEach(([k, v]) => {
+      if (k === '__steps_raw') return;
+      const el = form.elements.namedItem(k);
+      if (el && typeof v === 'string') el.value = v;
+      if (Array.isArray(v) && (k === 'sys' || k === 'data')) {
+        form.querySelectorAll(`input[name="${k}"]`).forEach(cb => {
+          cb.checked = v.includes(cb.value);
+        });
+      }
+    });
+    // restore steps
+    if (draft.__steps_raw) {
+      stepsList.innerHTML = '';
+      draft.__steps_raw.forEach(s => addStep(s));
+      if (stepsList.children.length < 3) {
+        while (stepsList.children.length < 3) addStep();
+      }
+    }
+    updateProgress();
+    showToast('Entwurf geladen ✓');
+  });
+
+  // --- RESET ---
+  document.getElementById('reset').addEventListener('click', () => {
+    if (!confirm('Wirklich alle Eingaben zurücksetzen?')) return;
+    form.reset();
+    stepsList.innerHTML = '';
+    addStep(); addStep(); addStep();
+    outputPanel.classList.remove('visible');
+    updateProgress();
+  });
+
+})();
+</script>
+</body>
+</html>
