@@ -766,6 +766,8 @@
 
 <script>
 (() => {
+  // Warten bis DOM bereit ist — verhindert, dass Script läuft bevor Elemente existieren
+  const init = () => {
   // --- DATE ---
   const today = new Date();
   document.getElementById('today').textContent = today.toLocaleDateString('de-DE', {
@@ -800,9 +802,36 @@
   buildChecks('systems-checks', SYSTEMS, 'sys');
   buildChecks('data-checks', DATA_TYPES, 'data');
 
-  // --- DYNAMIC STEPS ---
+  // --- FORM & PROGRESS TRACKING (must be defined before addStep uses updateProgress) ---
+  const form = document.getElementById('process-form');
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
   const stepsList = document.getElementById('steps-list');
+
+  const requiredFields = () => [
+    ...form.querySelectorAll('input[required], textarea[required]'),
+    ...stepsList.querySelectorAll('textarea')
+  ];
+
+  const updateProgress = () => {
+    const fields = requiredFields();
+    const filled = fields.filter(f => f.value.trim().length > 0).length;
+    // bonus: systems + data checkboxes
+    const sysChecked = form.querySelectorAll('input[name="sys"]:checked').length > 0 ? 1 : 0;
+    const total = fields.length + 1;
+    const pct = Math.min(100, Math.round(((filled + sysChecked) / total) * 100));
+    progressFill.style.width = pct + '%';
+    progressText.textContent = pct + '%';
+  };
+
+  // --- DYNAMIC STEPS ---
   let stepCounter = 0;
+
+  const renumberSteps = () => {
+    [...stepsList.children].forEach((row, i) => {
+      row.querySelector('.dyn-num').textContent = String(i + 1).padStart(2, '0');
+    });
+  };
 
   const addStep = (value = '') => {
     stepCounter++;
@@ -825,12 +854,6 @@
     updateProgress();
   };
 
-  const renumberSteps = () => {
-    [...stepsList.children].forEach((row, i) => {
-      row.querySelector('.dyn-num').textContent = String(i + 1).padStart(2, '0');
-    });
-  };
-
   // initial 3 steps
   addStep(); addStep(); addStep();
 
@@ -842,27 +865,6 @@
       addStep();
     });
   }
-
-  // --- PROGRESS TRACKING ---
-  const form = document.getElementById('process-form');
-  const progressFill = document.getElementById('progress-fill');
-  const progressText = document.getElementById('progress-text');
-
-  const requiredFields = () => [
-    ...form.querySelectorAll('input[required], textarea[required]'),
-    ...stepsList.querySelectorAll('textarea')
-  ];
-
-  const updateProgress = () => {
-    const fields = requiredFields();
-    const filled = fields.filter(f => f.value.trim().length > 0).length;
-    // bonus: systems + data checkboxes
-    const sysChecked = form.querySelectorAll('input[name="sys"]:checked').length > 0 ? 1 : 0;
-    const total = fields.length + 1;
-    const pct = Math.min(100, Math.round(((filled + sysChecked) / total) * 100));
-    progressFill.style.width = pct + '%';
-    progressText.textContent = pct + '%';
-  };
 
   form.addEventListener('input', updateProgress);
   form.addEventListener('change', updateProgress);
@@ -1035,6 +1037,14 @@ ${d.data_notes ? `\n**Anmerkungen:** ${d.data_notes}` : ''}
     updateProgress();
   });
 
+  }; // end of init()
+
+  // Script läuft, sobald DOM bereit ist
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
 </body>
