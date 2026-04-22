@@ -834,7 +834,14 @@
   // initial 3 steps
   addStep(); addStep(); addStep();
 
-  document.getElementById('add-step').addEventListener('click', () => addStep());
+  const addStepBtn = document.getElementById('add-step');
+  if (addStepBtn) {
+    addStepBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      addStep();
+    });
+  }
 
   // --- PROGRESS TRACKING ---
   const form = document.getElementById('process-form');
