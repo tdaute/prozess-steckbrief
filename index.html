@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IMB ProzessScout · Start</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #3a3a3a;
+    --ink-muted: #6b6b6b;
+    --paper: #faf8f4;
+    --paper-warm: #f3efe7;
+    --accent: #c8431f;
+    --accent-soft: #e8d3c7;
+    --accent-blue: #1f4ec8;
+    --accent-blue-soft: #c7d3e8;
+    --line: #d9d3c5;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse at top left, rgba(200,67,31,0.05), transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(31,78,200,0.04), transparent 50%);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 60px 32px;
+    width: 100%;
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+
+  header {
+    margin-bottom: 64px;
+  }
+
+  .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 24px;
+  }
+
+  .brand::before { content: "● "; color: var(--accent); }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    font-variation-settings: "opsz" 144;
+    max-width: 14ch;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .lede {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  .choose-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 64px;
+  }
+
+  @media (max-width: 720px) {
+    .choices { grid-template-columns: 1fr; }
+  }
+
+  .choice {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 36px 32px;
+    border-radius: 4px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .choice::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--accent-color, var(--accent));
+    transition: width 0.25s;
+  }
+
+  .choice:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-color, var(--accent));
+    box-shadow: 0 12px 28px -16px rgba(0,0,0,0.18);
+  }
+
+  .choice:hover::before { width: 8px; }
+
+  .choice--ich { --accent-color: var(--accent-blue); }
+
+  .choice-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+
+  .choice-num span {
+    color: var(--accent-color, var(--accent));
+    font-weight: 500;
+  }
+
+  .choice h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 32px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+    font-variation-settings: "opsz" 48;
+  }
+
+  .choice h2 em {
+    font-style: italic;
+    color: var(--accent-color, var(--accent));
+  }
+
+  .choice-desc {
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin: 0 0 24px;
+    line-height: 1.55;
+  }
+
+  .choice-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 28px;
+  }
+
+  .choice-bullets li {
+    font-size: 13px;
+    color: var(--ink-muted);
+    padding: 6px 0 6px 18px;
+    position: relative;
+    border-top: 1px solid var(--line);
+  }
+
+  .choice-bullets li:first-child { border-top: none; }
+
+  .choice-bullets li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-color, var(--accent));
+    font-weight: 500;
+  }
+
+  .choice-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 500;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 4px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .choice:hover .choice-cta {
+    color: var(--accent-color, var(--accent));
+    border-color: var(--accent-color, var(--accent));
+  }
+
+  footer {
+    margin-top: auto;
+    padding: 24px 32px;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">IMB Gruppe · ProzessScout</div>
+    <h1>Was möchtest du <em>strukturieren?</em></h1>
+    <p class="lede">Wähle aus, ob du einen bestehenden Geschäftsprozess durchleuchten möchtest — oder eine eigene Idee in ein konkretes Projekt überführen willst.</p>
+  </header>
+
+  <div class="choose-label">Wähle deinen Weg</div>
+
+  <div class="choices">
+    <a href="/kunde/" class="choice choice--kunde">
+      <div class="choice-num"><span>01</span> · KUNDE</div>
+      <h2>Geschäfts-<em>prozess</em></h2>
+      <p class="choice-desc">Du oder dein Kunde beschreibt einen bestehenden Prozess. Der Assistent visualisiert ihn und zeigt Automatisierungs- und KI-Potenziale auf.</p>
+      <ul class="choice-bullets">
+        <li>Ist-Aufnahme eines Prozesses (Trigger, Schritte, Tools)</li>
+        <li>Visualisierung als Flowchart</li>
+        <li>Detailbericht: Automatisierung, KI, Compliance</li>
+      </ul>
+      <span class="choice-cta">Steckbrief starten →</span>
+    </a>
+
+    <a href="/idee/" class="choice choice--ich">
+      <div class="choice-num"><span>02</span> · ICH</div>
+      <h2>Eigene <em>Idee</em></h2>
+      <p class="choice-desc">Du beschreibst eine Idee oder ein Vorhaben. Der Assistent strukturiert sie zu einem Projekt mit Phasen, Aufgaben und Roadmap.</p>
+      <ul class="choice-bullets">
+        <li>Idee + bisheriger Stand erfassen</li>
+        <li>Typabhängige Detailfragen (Buch, App, Kurs, Kampagne …)</li>
+        <li>Brainstorming → Roadmap → konkrete Aufgaben</li>
+      </ul>
+      <span class="choice-cta">Idee strukturieren →</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div>© IMB Gruppe · ProzessScout v1.1</div>
+  <div>Lokal · keine Daten werden übertragen</div>
+</footer>
+</body>
+</html>

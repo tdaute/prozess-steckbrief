@@ -1,0 +1,5 @@
+# Netlify redirects
+
+# Trailing-Slash-Normalisierung — verhindert 404s wenn jemand /kunde statt /kunde/ tippt
+/kunde     /kunde/    301
+/idee      /idee/     301
